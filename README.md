@@ -1,110 +1,188 @@
-🏥 Hospital Locator - Emergency Healthcare Finder
-A containerized web application that helps users find nearby hospitals using location-based filtering. Deployed using Docker containers across two web servers, load-balanced with HAProxy for 
-efficient traffic distribution.
 
-🔗 Live Access via Load Balancer
-Access the application via the HAProxy load balancer at:
- http://localhost:8082
+# 🏥 HOSPITAL LOCATOR — EMERGENCY HEALTHCARE FINDER
 
-📦 Docker Image Details
-Docker Hub Repository: https://hub.docker.com/r/tkcodes004/hospital-locator
+## 📍 PROJECT OVERVIEW
 
+Hospital Locator is a real-time, containerized web application that helps users locate nearby hospitals using their current location.  
+It uses the Geoapify Places API for location-based data and is deployed on two Dockerized servers (Web-01 and Web-02) behind a HAProxy load balancer for high availability and efficient traffic distribution.
 
-Image Name: tkcodes004/hospital-locator
+## 🌐 LIVE DEMO
 
+Access the application through the load balancer:
 
-Tag: v1
+```
 
+[http://localhost:8082](http://localhost:8082)
 
-Pull Command:
+````
 
- docker pull tkcodes004/hospital-locator:v1
+## 🧱 TECH STACK
 
+- Frontend: HTML, CSS, JavaScript (Browser Geolocation API)
+- Backend API: [Geoapify Places API](https://apidocs.geoapify.com/)
+- Containerization: Docker
+- Load Balancer: HAProxy
+- Network: `web_infra_lab_lablan`
 
+## 📦 DOCKER IMAGE DETAILS
 
-🛠️ Build Instructions (Local)
-To build the image locally:
+- Docker Hub: [tkcodes004/hospital-locator](https://hub.docker.com/repositories/tkcodes004)
+- Image: `tkcodes004/hospital-locator`
+- Tag: `v1`
+
+### Pull the Image
+
+```bash
+docker pull tkcodes004/hospital-locator:v1
+````
+
+### Build Locally
+
+```bash
 docker build -t tkcodes004/hospital-locator:v1 .
+```
 
+## 🖥️ DEPLOYMENT — WEB-01 & WEB-02
 
-🚀 Deployment Instructions
-On Web01 & Web02
-Run the containers inside the same Docker network (web_infra_lab_lablan):
+Ensure both containers are on the `web_infra_lab_lablan` network.
+
+### Web-01
+
+```bash
 docker run -d \
   --name app-web01 \
   --restart unless-stopped \
   --network web_infra_lab_lablan \
   --hostname web-01 \
   tkcodes004/hospital-locator:v1
+```
 
+### Web-02
+
+```bash
 docker run -d \
   --name app-web02 \
   --restart unless-stopped \
   --network web_infra_lab_lablan \
   --hostname web-02 \
   tkcodes004/hospital-locator:v1
+```
 
+## ⚖️ LOAD BALANCING — HAPROXY CONFIGURATION
 
-⚖️ Load Balancer (HAProxy) Configuration
-Location: /etc/haproxy/haproxy.cfg
+HAProxy distributes traffic between the app servers using round-robin.
+
+### Configuration File: `/etc/haproxy/haproxy.cfg`
+
+```haproxy
+global
+        log /dev/log    local0
+        log /dev/log    local1 notice
+        chroot /var/lib/haproxy
+        stats socket /run/haproxy/admin.sock mode 660 level admin
+        stats timeout 30s
+        user haproxy
+        group haproxy
+        daemon
+
+        # Default SSL material locations
+        ca-base /etc/ssl/certs
+        crt-base /etc/ssl/private
+
+        # See: https://ssl-config.mozilla.org/#server=haproxy&server-version=2.0.3&config=intermediate
+        ssl-default-bind-ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1>
+        ssl-default-bind-ciphersuites TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256
+        ssl-default-bind-options ssl-min-ver TLSv1.2 no-tls-tickets
+
+defaults
+        log     global
+        mode    http
+        option  httplog
+        option  dontlognull
+        timeout connect 5000
+        timeout client  50000
+        timeout server  50000
+        errorfile 400 /etc/haproxy/errors/400.http
+        errorfile 403 /etc/haproxy/errors/403.http
+        errorfile 408 /etc/haproxy/errors/408.http
+        errorfile 500 /etc/haproxy/errors/500.http
+        errorfile 502 /etc/haproxy/errors/502.http
+        errorfile 503 /etc/haproxy/errors/503.http
+        errorfile 504 /etc/haproxy/errors/504.http
 frontend http_front
     bind *:80
     default_backend webapps
 
 backend webapps
     balance roundrobin
-    server web01 web-01:8080 check
-    server web02 web-02:8080 check
+    server web01 172.20.0.2:8080 check
+    server web02 172.20.0.3:8080 check
 
-Reload HAProxy after config change:
+```
+
+### Reload HAProxy
+
+```bash
 haproxy -sf $(pidof haproxy) -f /etc/haproxy/haproxy.cfg
+```
 
+## 🧪 TESTING LOAD BALANCING
 
-🧪 Testing Load Balancing (Round Robin)
-To verify load balancing between web-01 and web-02:
-Edit index.html in each container to display slightly different headers (e.g., 🏥 Hospital Locator - Web-01 and 🏥 Hospital Locator - Web-02).
+1. Modify `index.html` in each container with unique headers.
+2. Run:
 
+```bash
+curl http://localhost:8082
+```
 
-Rebuild containers or live-edit using:
+3. Confirm alternating header content to verify round-robin behavior.
 
- docker exec -it app-web01 sh
-vi index.html
+## 🔐 ENVIRONMENT VARIABLES
 
+Use environment variables to inject secrets like API keys:
 
-Then, run:
-
- curl http://localhost:8082
-
-
-Observe alternating content on successive requests, confirming round-robin behavior.
-
-
-
-🔐 Hardening – Managing Secrets (API Keys)
-To avoid hardcoding secrets (like API keys), use environment variables when running containers:
+```bash
 docker run -d \
-  -e API_KEY=your_key_here \
-  --name app-web01 \
+  -e API_KEY=your_api_key \
   ...
+```
 
-In your script.js, access it via server-side rendering or inject via a templating engine if needed.
-Note: This project uses Geoapify Places API for hospital data retrieval.
- 📖 Geoapify API Docs
+Access keys securely via server-side rendering or templates.
 
-🧩 Challenges & Adaptation
-Initially, the idea was to build a music events finder, but after exploring several APIs, most required paid plans. I pivoted to building a Hospital Locator using Geoapify Places API due to its 
-robust free tier and location-based data access.
+## 🌍 API INTEGRATION — GEOAPIFY PLACES API
 
-🙏 Credits
-Geoapify Places API – for hospital geolocation & details
+* Purpose: Fetches hospital data based on user location.
+* Sample Query:
 
+```
+https://api.geoapify.com/v2/places?
+  categories=healthcare.hospital&
+  filter=circle:<lon>,<lat>,5000&
+  limit=10&
+  apiKey=YOUR_API_KEY
+```
 
-Docker – for containerization
+* Docs: [Geoapify API Docs](https://apidocs.geoapify.com/)
 
+## 🧭 PROJECT ORIGINS & ADAPTATION
 
-HAProxy – for load balancing
+Originally designed as a music event locator using Ticketmaster API.
+Pivoted to a hospital finder app after facing API pricing limits, utilizing Geoapify's robust free tier.
 
+🙏 CREDITS
 
-Inspiration from various online tutorials and documentation.
+* Geoapify API — Real-time hospital data
+* Docker — Containerization
+* HAProxy — Load balancing
+* Open-source tutorials and developer community
 
+📄 LICENSE
 
+This project is licensed under the MIT License.
+
+```
+
+---
+
+Would you like this exported as a downloadable `.md` file or copied directly into your project folder?
+```
