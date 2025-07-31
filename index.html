@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Locator - Emergency Healthcare Finder</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏥 Hospital Locator</h1>
+            <p>Find nearby hospitals and healthcare centers quickly</p>
+        </header>
+
+        <main>
+            <div class="search-section">
+                <div class="location-input">
+                    <label for="location">Enter your location:</label>
+                    <input type="text" id="location" placeholder="Enter city, address, or postal code">
+                    <button id="searchBtn" class="btn-primary">Find Hospitals</button>
+                    <button id="useLocationBtn" class="btn-secondary">Use My Location</button>
+                </div>
+
+                <div class="filters">
+                    <label for="radius">Search Radius:</label>
+                    <select id="radius">
+                        <option value="5">5 km</option>
+                        <option value="10" selected>10 km</option>
+                        <option value="20">20 km</option>
+                        <option value="50">50 km</option>
+                    </select>
+
+                    <label for="sortBy">Sort by:</label>
+                    <select id="sortBy">
+                        <option value="distance">Distance</option>
+                        <option value="name">Name</option>
+                        <option value="rating">Rating</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="loading" id="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Searching for hospitals...</p>
+            </div>
+
+            <div class="error-message" id="errorMessage" style="display: none;"></div>
+
+            <div class="results-section">
+                <div class="results-header" id="resultsHeader" style="display: none;">
+                    <h2>Nearby Hospitals</h2>
+                    <span class="results-count" id="resultsCount"></span>
+                </div>
+
+                <div class="search-bar" id="searchBar" style="display: none;">
+                    <input type="text" id="filterInput" placeholder="Search hospitals by name...">
+                </div>
+
+                <div class="hospitals-grid" id="hospitalsGrid"></div>
+            </div>
+        </main>
+
+    </div>
+    <script src="script.js"></script>
+<footer>
+            <p>&copy; 2025 Hospital Locator. Emergency services: Call your local emergency number.</p>
+        </footer>
+</body>
+</html>
