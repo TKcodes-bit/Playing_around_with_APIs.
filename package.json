@@ -1,0 +1,25 @@
+{
+  "name": "playing_around_with_apis.",
+  "version": "1.0.0",
+  "description": "",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TKcodes-bit/Playing_around_with_APIs..git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/TKcodes-bit/Playing_around_with_APIs./issues"
+  },
+  "homepage": "https://github.com/TKcodes-bit/Playing_around_with_APIs.#readme",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
