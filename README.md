@@ -7,14 +7,10 @@ Hospital Locator is a real-time, containerized web application that helps users 
 It uses the Geoapify Places API for location-based data and is deployed on two Dockerized servers (Web-01 and Web-02) behind a HAProxy load balancer for high availability and efficient traffic distribution.
 
 ## 🌐 LIVE DEMO
+access demo video
 
-Access the application through the load balancer:
+https://www.loom.com/share/e3befa35fd554cefbeed8dbaaa5ff7fc?sid=f9275e13-4990-4e2e-8ef4-3de67935748e
 
-```
-
-[http://localhost:8082](http://localhost:8082)
-
-````
 
 ## 🧱 TECH STACK
 
