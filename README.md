@@ -24,17 +24,6 @@ https://www.loom.com/share/e3befa35fd554cefbeed8dbaaa5ff7fc?sid=f9275e13-4990-4e
 
 - Docker Hub: [tkcodes004/hospital-locator](https://hub.docker.com/u/tkcodes004/)
 
-### Pull the Image
-
-```bash
-docker pull tkcodes004/hospital-locator:v1
-````
-
-### Build Locally
-
-```bash
-docker build -t tkcodes004/hospital-locator:v1 .
-```
 
 ## 🖥️ DEPLOYMENT — WEB-01 & WEB-02
 
