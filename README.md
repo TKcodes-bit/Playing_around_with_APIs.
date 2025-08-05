@@ -24,6 +24,10 @@ https://www.loom.com/share/e3befa35fd554cefbeed8dbaaa5ff7fc?sid=f9275e13-4990-4e
 
 - Docker Hub: [tkcodes004/hospital-locator](https://hub.docker.com/u/tkcodes004/)
 
+```bash
+npm start
+```
+
 
 ## 🖥️ DEPLOYMENT — WEB-01 & WEB-02
 
@@ -37,7 +41,6 @@ docker run -d \
   --restart unless-stopped \
   --network web_infra_lab_lablan \
   --hostname web-01 \
-  tkcodes004/hospital-locator:v1
 ```
 
 ### Web-02
@@ -48,7 +51,6 @@ docker run -d \
   --restart unless-stopped \
   --network web_infra_lab_lablan \
   --hostname web-02 \
-  tkcodes004/hospital-locator:v1
 ```
 
 ## ⚖️ LOAD BALANCING — HAPROXY CONFIGURATION
@@ -59,47 +61,24 @@ HAProxy distributes traffic between the app servers using round-robin.
 
 ```haproxy
 global
-        log /dev/log    local0
-        log /dev/log    local1 notice
-        chroot /var/lib/haproxy
-        stats socket /run/haproxy/admin.sock mode 660 level admin
-        stats timeout 30s
-        user haproxy
-        group haproxy
-        daemon
-
-        # Default SSL material locations
-        ca-base /etc/ssl/certs
-        crt-base /etc/ssl/private
-
-        # See: https://ssl-config.mozilla.org/#server=haproxy&server-version=2.0.3&config=intermediate
-        ssl-default-bind-ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1>
-        ssl-default-bind-ciphersuites TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256
-        ssl-default-bind-options ssl-min-ver TLSv1.2 no-tls-tickets
+    daemon
+    maxconn 256
 
 defaults
-        log     global
-        mode    http
-        option  httplog
-        option  dontlognull
-        timeout connect 5000
-        timeout client  50000
-        timeout server  50000
-        errorfile 400 /etc/haproxy/errors/400.http
-        errorfile 403 /etc/haproxy/errors/403.http
-        errorfile 408 /etc/haproxy/errors/408.http
-        errorfile 500 /etc/haproxy/errors/500.http
-        errorfile 502 /etc/haproxy/errors/502.http
-        errorfile 503 /etc/haproxy/errors/503.http
-        errorfile 504 /etc/haproxy/errors/504.http
-frontend http_front
-    bind *:80
-    default_backend webapps
+    mode http
+    timeout connect 5s
+    timeout client  50s
+    timeout server  50s
 
-backend webapps
+frontend http-in
+    bind *:80
+    default_backend servers
+
+backend servers
     balance roundrobin
-    server web01 172.20.0.2:8080 check
-    server web02 172.20.0.3:8080 check
+    server web01 172.20.0.11:8080 check
+    server web02 172.20.0.12:8080 check
+    http-response set-header X-Served-By %[srv_name]
 
 ```
 
@@ -115,7 +94,7 @@ haproxy -sf $(pidof haproxy) -f /etc/haproxy/haproxy.cfg
 2. Run:
 
 ```bash
-curl http://localhost:8082
+curl http://localhost:8080
 ```
 
 3. Confirm alternating header content to verify round-robin behavior.
@@ -159,13 +138,5 @@ Pivoted to a hospital finder app after facing API pricing limits, utilizing Geoa
 * HAProxy — Load balancing
 * Open-source tutorials and developer community
 
-📄 LICENSE
-
-This project is licensed under the MIT License.
-
-```
-
----
-
-Would you like this exported as a downloadable `.md` file or copied directly into your project folder?
-```
+Requirements:
+Express
