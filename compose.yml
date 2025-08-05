@@ -1,4 +1,39 @@
-version: "3.9"
+services:
+  web-01:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: web-01
+    ports:
+      - "2211:22"
+      - "8080:8080"
+    networks:
+      lablan:
+        ipv4_address: 172.20.0.11
+
+  web-02:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: web-02
+    ports:
+      - "2212:22"
+      - "8081:8080"
+    networks:
+      lablan:
+        ipv4_address: 172.20.0.12
+
+  lb-01:
+    image: haproxy:latest
+    container_name: lb-01
+    volumes:
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+    ports:
+      - "2210:22"
+      - "8082:80"
+    networks:
+      lablan:
+        ipv4_address: 172.20.0.10
 
 networks:
   lablan:
@@ -6,37 +41,3 @@ networks:
     ipam:
       config:
         - subnet: 172.20.0.0/24
-
-services:
-  web-01:
-    build: ./web
-    container_name: web-01
-    hostname: web-01
-    networks:
-      lablan:
-        ipv4_address: 172.20.0.11
-    ports:
-      - "2211:22"
-      - "8080:80"
-
-  web-02:
-    build: ./web
-    container_name: web-02
-    hostname: web-02
-    networks:
-      lablan:
-        ipv4_address: 172.20.0.12
-    ports:
-      - "2212:22"
-      - "8081:80"
-
-  lb-01:
-    build: ./lb
-    container_name: lb-01
-    hostname: lb-01
-    networks:
-      lablan:
-        ipv4_address: 172.20.0.10
-    ports:
-      - "2210:22"
-      - "8082:80"
