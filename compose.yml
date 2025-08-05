@@ -27,7 +27,7 @@ services:
     image: haproxy:latest
     container_name: lb-01
     volumes:
-      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
     ports:
       - "2210:22"
       - "8082:80"
