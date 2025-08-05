@@ -22,9 +22,7 @@ https://www.loom.com/share/e3befa35fd554cefbeed8dbaaa5ff7fc?sid=f9275e13-4990-4e
 
 ## 📦 DOCKER IMAGE DETAILS
 
-- Docker Hub: [tkcodes004/hospital-locator](https://hub.docker.com/repositories/tkcodes004)
-- Image: `tkcodes004/hospital-locator`
-- Tag: `v1`
+- Docker Hub: [tkcodes004/hospital-locator](https://hub.docker.com/u/tkcodes004/)
 
 ### Pull the Image
 
